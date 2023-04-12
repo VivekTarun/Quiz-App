@@ -8,6 +8,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var trueButton: UIButton!
     @IBOutlet weak var questionLabel: UILabel!
     
+    @IBOutlet weak var score: UILabel!
     var quizBrain = QuizBrain()
     
    
@@ -22,10 +23,10 @@ class ViewController: UIViewController {
     @IBAction func answerButtonPressed(_ sender: UIButton) {
         
         let userAnswer = sender.currentTitle // user sends the data
-        let actualAnswer = quiz[questionNumber].answer// actual ans that is mentioned in the array above.
+        let userGotItRight = quizBrain.checkAnswer(userAnswer!)
         
         // for printing the answer
-        if userAnswer == actualAnswer {
+        if userGotItRight {
             sender.backgroundColor = UIColor.green
         } else {
             sender.backgroundColor = UIColor.red
@@ -33,22 +34,18 @@ class ViewController: UIViewController {
         
         // This if else statement is for stoping the app to break.
         // And returning to the first question.
-        if questionNumber < quiz.count - 1 {
-            questionNumber += 1;
-        } else {
-            questionNumber = 0;
-        }
+        quizBrain.nextQuestion()
         
         Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(updateUI), userInfo: nil, repeats: false)
         
     }
     
     @objc func updateUI() {
-        questionLabel.text = quiz[questionNumber].text
+        questionLabel.text = quizBrain.getQuestionText();
+        progressBar.progress = quizBrain.getProgress()
+        score.text = "Score: \(quizBrain.getScore())"
         trueButton.backgroundColor = UIColor.clear
         falseButton.backgroundColor = UIColor.clear
-        
-        progressBar.progress = Float(questionNumber + 1) / Float(quiz.count);
     }
 }
 
